@@ -1,0 +1,107 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "img/uploads"
+public_folder: "/img/uploads"
+
+collections:
+  # Site Settings
+  - name: "settings"
+    label: "Site Settings"
+    files:
+      - name: "site"
+        label: "General Settings"
+        file: "settings/site.json"
+        fields:
+          - { label: "Site Name", name: "siteName", widget: "string" }
+          - { label: "Location", name: "location", widget: "string", default: "Sehra Village, AJK, Pakistan" }
+          - { label: "Phone Number", name: "phone", widget: "string" }
+          - { label: "Email Address", name: "email", widget: "string" }
+          - { label: "Province", name: "province", widget: "string", default: "AJK" }
+          - { label: "Country", name: "country", widget: "string", default: "Pakistan" }
+          - { label: "Population", name: "population", widget: "string", default: "5,000+" }
+          - { label: "Years of History", name: "yearsHistory", widget: "string", default: "100+" }
+          - { label: "Number of Schools", name: "schools", widget: "string", default: "3" }
+          - { label: "Number of Mosques", name: "mosques", widget: "string", default: "1" }
+          - { label: "Nearest City", name: "nearestCity", widget: "string", default: "Muzaffarabad" }
+          - { label: "Map Latitude", name: "mapLat", widget: "number", value_type: "float", default: 34.37 }
+          - { label: "Map Longitude", name: "mapLng", widget: "number", value_type: "float", default: 73.47 }
+  
+  # Main Page Cards
+  - name: "main_cards"
+    label: "Main Page Cards"
+    folder: "content/main-cards"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Image", name: "image", widget: "image" }
+      - { label: "Icon", name: "icon", widget: "string", default: "🏡" }
+      - { label: "Icon Color", name: "iconColor", widget: "select", options: ["sky", "gold", "green"] }
+      - { label: "Meta Text", name: "meta", widget: "string", required: false }
+      - { label: "Order", name: "order", widget: "number", default: 1 }
+  
+  # News
+  - name: "news"
+    label: "News & Updates"
+    folder: "content/news"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Content", name: "content", widget: "text" }
+      - { label: "Category", name: "category", widget: "select", options: ["Development", "Community", "Education", "Health", "Agriculture", "Infrastructure"] }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Author", name: "author", widget: "string", default: "Village Council" }
+      - { label: "Featured Image", name: "image", widget: "image", required: false }
+  
+  # Gallery
+  - name: "gallery"
+    label: "Gallery"
+    folder: "content/gallery"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Image", name: "image", widget: "image" }
+      - { label: "Order", name: "order", widget: "number", default: 1 }
+  
+  # Notice Section
+  - name: "notice"
+    label: "Notice Section"
+    files:
+      - name: "current_notice"
+        label: "Current Notice"
+        file: "content/notice.json"
+        fields:
+          - { label: "Title", name: "title", widget: "string", default: "Notice" }
+          - { label: "Content", name: "content", widget: "text" }
+          - { label: "Show Notice", name: "enabled", widget: "boolean", default: true }
+  
+  # Upcoming Events
+  - name: "upcoming"
+    label: "Upcoming Events"
+    files:
+      - name: "current_upcoming"
+        label: "Current Upcoming Event"
+        file: "content/upcoming.json"
+        fields:
+          - { label: "Title", name: "title", widget: "string", default: "Upcoming" }
+          - { label: "Content", name: "content", widget: "text" }
+          - { label: "Show Event", name: "enabled", widget: "boolean", default: true }
+  
+  # Custom Notifications
+  - name: "notifications"
+    label: "Push Notifications"
+    folder: "content/notifications"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Message", name: "message", widget: "text" }
+      - { label: "Icon", name: "icon", widget: "select", options: ["📰", "🎉", "📢", "⚠️", "✅"], default: "📰" }
+      - { label: "Send Immediately", name: "sendNow", widget: "boolean", default: false }
+      - { label: "Created", name: "date", widget: "datetime" }

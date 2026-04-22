@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sehra Village — AJK, Pakistan</title>
+<meta name="description" content="Welcome to Sehra Village in Azad Jammu & Kashmir, Pakistan. Discover our community, culture, and heritage."/>
+<link rel="stylesheet" href="css/style.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#0e7fc0"/>
+<link rel="apple-touch-icon" href="img/icon-192.png"/>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <span>📍 <span id="topbar-location">Sehra Village, AJK, Pakistan</span></span>
+  <div class="top-right">
+    <span>☎ <span id="topbar-phone">+92 300 0000000</span></span>
+    <span>✉ <span id="topbar-email">contact@sehravillage.site</span></span>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="navbar">
+    <div class="logo" onclick="navigateTo('home')">
+      <div class="logo-icon">🏡</div>
+      <div class="logo-text">Sehra<small>Village, AJK</small></div>
+    </div>
+    <ul class="nav-menu" id="navMenu">
+      <li><a class="active" onclick="navigateTo('home')">Home</a></li>
+      <li><a onclick="navigateTo('about')">About</a></li>
+      <li><a onclick="navigateTo('news')">News</a></li>
+      <li><a onclick="navigateTo('gallery')">Gallery</a></li>
+      <li><a onclick="navigateTo('contact')">Contact</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" onclick="toggleMobile()"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" onclick="toggleMobile()">✕</button>
+  <a onclick="navigateTo('home');toggleMobile()">🏠 Home</a>
+  <a onclick="navigateTo('about');toggleMobile()">📖 About</a>
+  <a onclick="navigateTo('news');toggleMobile()">📰 News</a>
+  <a onclick="navigateTo('gallery');toggleMobile()">🖼 Gallery</a>
+  <a onclick="navigateTo('contact');toggleMobile()">📬 Contact</a>
+</div>
+
+<!-- NOTIFICATION PERMISSION BANNER -->
+<div class="notification-banner" id="notificationBanner" style="display:none">
+  <div class="notification-banner-content">
+    <p>📬 <strong>Stay Updated!</strong> Enable notifications to receive village news and updates.</p>
+    <div style="display:flex;gap:0.5rem">
+      <button class="btn btn-white" onclick="requestNotificationPermission()">Enable</button>
+      <button class="btn btn-outline-white" onclick="dismissNotificationBanner()">Later</button>
+    </div>
+  </div>
+</div>
+
+<!-- PWA INSTALL BANNER -->
+<div class="pwa-banner" id="pwaBanner" style="display:none">
+  <div class="pwa-banner-content">
+    <div style="display:flex;align-items:center;gap:1rem">
+      <div style="font-size:2.5rem">📱</div>
+      <div>
+        <h4 style="font-weight:800;margin-bottom:0.2rem">Install Sehra Village App</h4>
+        <p style="font-size:0.85rem;opacity:0.8">Get quick access and notifications on your device</p>
+      </div>
+    </div>
+    <div style="display:flex;gap:0.5rem;margin-top:1rem">
+      <button class="btn btn-sky" onclick="installPWA()">Install App</button>
+      <button class="btn btn-outline-white" onclick="dismissPWABanner()">Not Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE CONTENT -->
+<div id="pageContent"></div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="f-logo">🏡 Sehra Village</div>
+      <p>A proud community in Azad Jammu & Kashmir, Pakistan — built on faith, family, and hard work.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Pages</h4>
+      <ul>
+        <li><a onclick="navigateTo('home')">Home</a></li>
+        <li><a onclick="navigateTo('about')">About</a></li>
+        <li><a onclick="navigateTo('news')">News</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>More</h4>
+      <ul>
+        <li><a onclick="navigateTo('gallery')">Gallery</a></li>
+        <li><a onclick="navigateTo('contact')">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a>AJK, Pakistan</a></li>
+        <li><a id="footer-phone">+92 300 0000000</a></li>
+        <li><a id="footer-email">contact@sehravillage.site</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 Sehra Village. Built with ❤️ by the community.</div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/config.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/pwa.js"></script>
+<script src="js/notifications.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

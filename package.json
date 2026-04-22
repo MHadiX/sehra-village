@@ -1,0 +1,17 @@
+{
+  "name": "sehra-village-website",
+  "version": "1.0.0",
+  "description": "Official website for Sehra Village, AJK, Pakistan",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'Static site - no build needed'"
+  },
+  "dependencies": {
+    "faunadb": "^4.8.0",
+    "nodemailer": "^6.9.7",
+    "web-push": "^3.6.6"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.10.1"
+  }
+}
