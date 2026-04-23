@@ -110,12 +110,12 @@ function getHomePage() {
       <button class="btn btn-sky" onclick="navigateTo('contact')">Get Directions →</button>
     </div>
     <div class="map-wrapper">
-      <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=73.2,34.2,73.7,34.5&layer=mapnik&marker=34.37,73.47" title="Sehra Village Location" loading="lazy" allowfullscreen></iframe>
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d20240.72847417268!2d73.94193626442267!3d33.64276706996411!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38e03b12bc3fc0db%3A0x3c192af79ea359e1!2sSehra!5e1!3m2!1sen!2s!4v1776884699498!5m2!1sen!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Sehra Village Location"></iframe>
     </div>
     <div class="map-info-grid">
       <div class="map-info-card"><div class="map-info-icon">📍</div><div><h4>Location</h4><p id="map-location">AJK, Pakistan</p></div></div>
       <div class="map-info-card"><div class="map-info-icon">🗺️</div><div><h4>Province</h4><p id="map-province">AJK</p></div></div>
-      <div class="map-info-card"><div class="map-info-icon">🚗</div><div><h4>Nearest City</h4><p id="map-city">Muzaffarabad</p></div></div>
+      <div class="map-info-card"><div class="map-info-icon">🚗</div><div><h4>Nearest City</h4><p id="map-city">Kotli</p></div></div>
     </div>
   </div>
 </section>
@@ -263,7 +263,7 @@ function getContactPage() {
         <div class="contact-card"><div class="contact-card-icon">✉️</div><div><h4>Email</h4><p id="contact-email">contact@sehravillage.site</p></div></div>
         <div class="contact-card"><div class="contact-card-icon">🕐</div><div><h4>Office Hours</h4><p>Mon – Sat: 9:00 AM – 5:00 PM</p></div></div>
         <div class="map-wrapper">
-          <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=73.2,34.2,73.7,34.5&layer=mapnik&marker=34.37,73.47" title="Sehra Village Map" loading="lazy" allowfullscreen></iframe>
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d20240.72847417268!2d73.94193626442267!3d33.64276706996411!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38e03b12bc3fc0db%3A0x3c192af79ea359e1!2sSehra!5e1!3m2!1sen!2s!4v1776884699498!5m2!1sen!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Sehra Village Location"></iframe>
         </div>
       </div>
       
@@ -272,8 +272,8 @@ function getContactPage() {
         <p>Fill in the form and we'll get back to you shortly.</p>
         <form id="contactForm" onsubmit="handleContactSubmit(event)">
           <div class="form-row">
-            <div class="form-group"><label>First Name*</label><input type="text" name="firstName" required placeholder="Ahmad"/></div>
-            <div class="form-group"><label>Last Name*</label><input type="text" name="lastName" required placeholder="Ali"/></div>
+            <div class="form-group"><label>First Name*</label><input type="text" name="firstName" required placeholder="Muhammad"/></div>
+            <div class="form-group"><label>Last Name*</label><input type="text" name="lastName" required placeholder="Hadi"/></div>
           </div>
           <div class="form-group"><label>Email Address*</label><input type="email" name="email" required placeholder="your@email.com"/></div>
           <div class="form-group">
