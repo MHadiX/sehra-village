@@ -1,107 +1,178 @@
 backend:
   name: git-gateway
   branch: main
+  
+# Sveltia CMS specific settings
+locale: en
+site_url: https://sehravillage.site
+logo_url: https://sehravillage.site/img/icon-192.png
 
 media_folder: "img/uploads"
 public_folder: "/img/uploads"
 
+# Enable media library
+media_library:
+  name: uploadcare
+  config:
+    publicKey: demopublickey
+
 collections:
   # Site Settings
   - name: "settings"
-    label: "Site Settings"
+    label: "⚙️ Site Settings"
+    description: "Configure site-wide settings"
     files:
       - name: "site"
         label: "General Settings"
         file: "settings/site.json"
         fields:
-          - { label: "Site Name", name: "siteName", widget: "string" }
+          - { label: "Site Name", name: "siteName", widget: "string", hint: "Name of your village" }
           - { label: "Location", name: "location", widget: "string", default: "Sehra Village, AJK, Pakistan" }
-          - { label: "Phone Number", name: "phone", widget: "string" }
-          - { label: "Email Address", name: "email", widget: "string" }
+          - { label: "Phone Number", name: "phone", widget: "string", pattern: ['^[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}$', 'Must be a valid phone number'] }
+          - { label: "Email Address", name: "email", widget: "string", pattern: ['^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', 'Must be a valid email'] }
           - { label: "Province", name: "province", widget: "string", default: "AJK" }
           - { label: "Country", name: "country", widget: "string", default: "Pakistan" }
-          - { label: "Population", name: "population", widget: "string", default: "5,000+" }
-          - { label: "Years of History", name: "yearsHistory", widget: "string", default: "100+" }
+          - { label: "Population", name: "population", widget: "string", default: "5,000+", hint: "e.g. 5,000+ or 10,000+" }
+          - { label: "Years of History", name: "yearsHistory", widget: "string", default: "100+", hint: "e.g. 100+ or 200+" }
           - { label: "Number of Schools", name: "schools", widget: "string", default: "3" }
           - { label: "Number of Mosques", name: "mosques", widget: "string", default: "1" }
           - { label: "Nearest City", name: "nearestCity", widget: "string", default: "Muzaffarabad" }
-          - { label: "Map Latitude", name: "mapLat", widget: "number", value_type: "float", default: 34.37 }
-          - { label: "Map Longitude", name: "mapLng", widget: "number", value_type: "float", default: 73.47 }
+          - { label: "Map Latitude", name: "mapLat", widget: "number", value_type: "float", default: 34.37, hint: "Get from Google Maps" }
+          - { label: "Map Longitude", name: "mapLng", widget: "number", value_type: "float", default: 73.47, hint: "Get from Google Maps" }
   
   # Main Page Cards
   - name: "main_cards"
-    label: "Main Page Cards"
+    label: "🏡 Main Page Cards"
+    label_singular: "Card"
+    description: "Edit the 3 main highlight cards on homepage"
     folder: "content/main-cards"
     create: true
     slug: "{{slug}}"
+    preview_path: "/"
+    identifier_field: title
+    summary: "{{title}} - Order: {{order}}"
+    sortable_fields: ['order', 'title']
+    view_filters:
+      - label: "Icon Color: Blue"
+        field: iconColor
+        pattern: 'sky'
+      - label: "Icon Color: Gold"
+        field: iconColor
+        pattern: 'gold'
+      - label: "Icon Color: Green"
+        field: iconColor
+        pattern: 'green'
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Description", name: "description", widget: "text" }
-      - { label: "Image", name: "image", widget: "image" }
-      - { label: "Icon", name: "icon", widget: "string", default: "🏡" }
-      - { label: "Icon Color", name: "iconColor", widget: "select", options: ["sky", "gold", "green"] }
-      - { label: "Meta Text", name: "meta", widget: "string", required: false }
-      - { label: "Order", name: "order", widget: "number", default: 1 }
+      - { label: "Title", name: "title", widget: "string", hint: "Card heading" }
+      - { label: "Description", name: "description", widget: "text", hint: "Card content (keep it brief)" }
+      - { label: "Image", name: "image", widget: "image", hint: "Upload card image (recommended: 600x400px)" }
+      - { label: "Icon", name: "icon", widget: "string", default: "🏡", hint: "Emoji icon (copy from emojipedia.org)" }
+      - { label: "Icon Background Color", name: "iconColor", widget: "select", options: 
+          - { label: "Blue", value: "sky" }
+          - { label: "Gold/Yellow", value: "gold" }
+          - { label: "Green", value: "green" }
+        }
+      - { label: "Meta Text", name: "meta", widget: "string", required: false, hint: "Optional small text below description" }
+      - { label: "Display Order", name: "order", widget: "number", default: 1, value_type: "int", min: 1, hint: "Lower numbers appear first" }
   
   # News
   - name: "news"
-    label: "News & Updates"
+    label: "📰 News & Updates"
+    label_singular: "News Article"
+    description: "Manage village news and announcements"
     folder: "content/news"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    preview_path: "news"
+    identifier_field: title
+    summary: "{{title}} - {{date | date('YYYY-MM-DD')}}"
+    sortable_fields: ['date', 'title', 'category']
+    view_filters:
+      - label: "Development News"
+        field: category
+        pattern: 'Development'
+      - label: "Community News"
+        field: category
+        pattern: 'Community'
+      - label: "Education News"
+        field: category
+        pattern: 'Education'
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Content", name: "content", widget: "text" }
-      - { label: "Category", name: "category", widget: "select", options: ["Development", "Community", "Education", "Health", "Agriculture", "Infrastructure"] }
-      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Title", name: "title", widget: "string", hint: "News headline" }
+      - { label: "Content", name: "content", widget: "text", hint: "Full news article content" }
+      - { label: "Category", name: "category", widget: "select", options: ["Development", "Community", "Education", "Health", "Agriculture", "Infrastructure", "Culture", "Sports"] }
+      - { label: "Publish Date", name: "date", widget: "datetime", format: "YYYY-MM-DD HH:mm:ss", date_format: "YYYY-MM-DD", time_format: "HH:mm", hint: "When to publish this news" }
       - { label: "Author", name: "author", widget: "string", default: "Village Council" }
-      - { label: "Featured Image", name: "image", widget: "image", required: false }
+      - { label: "Featured Image", name: "image", widget: "image", required: false, hint: "Optional image for this news (recommended: 800x600px)" }
+      - { label: "Featured", name: "featured", widget: "boolean", required: false, default: false, hint: "Show on homepage?" }
   
   # Gallery
   - name: "gallery"
-    label: "Gallery"
+    label: "🖼️ Gallery"
+    label_singular: "Photo"
+    description: "Manage village photo gallery"
     folder: "content/gallery"
     create: true
     slug: "{{slug}}"
+    preview_path: "gallery"
+    identifier_field: title
+    summary: "{{title}} - Order: {{order}}"
+    sortable_fields: ['order', 'title', 'date']
+    view_groups:
+      - label: Year
+        field: date
+        pattern: \d{4}
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Description", name: "description", widget: "text" }
-      - { label: "Image", name: "image", widget: "image" }
-      - { label: "Order", name: "order", widget: "number", default: 1 }
+      - { label: "Title", name: "title", widget: "string", hint: "Photo title/caption" }
+      - { label: "Description", name: "description", widget: "text", hint: "Describe what's in the photo" }
+      - { label: "Image", name: "image", widget: "image", hint: "Upload photo (recommended: 1200x800px, max 2MB)" }
+      - { label: "Photo Date", name: "date", widget: "datetime", required: false, hint: "When was this photo taken?" }
+      - { label: "Display Order", name: "order", widget: "number", default: 1, value_type: "int", min: 1, hint: "Lower numbers appear first" }
+      - { label: "Tags", name: "tags", widget: "list", required: false, hint: "Add tags like: nature, people, buildings" }
   
   # Notice Section
   - name: "notice"
-    label: "Notice Section"
+    label: "📢 Notice Board"
+    description: "Important announcements on news page sidebar"
     files:
       - name: "current_notice"
         label: "Current Notice"
         file: "content/notice.json"
         fields:
-          - { label: "Title", name: "title", widget: "string", default: "Notice" }
-          - { label: "Content", name: "content", widget: "text" }
-          - { label: "Show Notice", name: "enabled", widget: "boolean", default: true }
+          - { label: "Title", name: "title", widget: "string", default: "Notice", hint: "Notice heading" }
+          - { label: "Content", name: "content", widget: "text", hint: "Notice message" }
+          - { label: "Show Notice", name: "enabled", widget: "boolean", default: true, hint: "Turn notice on/off" }
+          - { label: "Updated Date", name: "updated", widget: "datetime", required: false }
   
   # Upcoming Events
   - name: "upcoming"
-    label: "Upcoming Events"
+    label: "🎉 Upcoming Events"
+    description: "Show upcoming events on news page sidebar"
     files:
       - name: "current_upcoming"
         label: "Current Upcoming Event"
         file: "content/upcoming.json"
         fields:
-          - { label: "Title", name: "title", widget: "string", default: "Upcoming" }
-          - { label: "Content", name: "content", widget: "text" }
-          - { label: "Show Event", name: "enabled", widget: "boolean", default: true }
+          - { label: "Title", name: "title", widget: "string", default: "Upcoming", hint: "Event heading" }
+          - { label: "Content", name: "content", widget: "text", hint: "Event details" }
+          - { label: "Show Event", name: "enabled", widget: "boolean", default: true, hint: "Turn event on/off" }
+          - { label: "Event Date", name: "eventDate", widget: "datetime", required: false, hint: "When is this event?" }
   
   # Custom Notifications
   - name: "notifications"
-    label: "Push Notifications"
+    label: "🔔 Push Notifications"
+    label_singular: "Notification"
+    description: "Send push notifications to all users"
     folder: "content/notifications"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    identifier_field: title
+    summary: "{{title}} - {{date | date('YYYY-MM-DD HH:mm')}}"
+    sortable_fields: ['date', 'title']
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Message", name: "message", widget: "text" }
-      - { label: "Icon", name: "icon", widget: "select", options: ["📰", "🎉", "📢", "⚠️", "✅"], default: "📰" }
-      - { label: "Send Immediately", name: "sendNow", widget: "boolean", default: false }
-      - { label: "Created", name: "date", widget: "datetime" }
+      - { label: "Title", name: "title", widget: "string", hint: "Notification title (keep it short)" }
+      - { label: "Message", name: "message", widget: "text", hint: "Notification content" }
+      - { label: "Icon", name: "icon", widget: "select", options: ["📰", "🎉", "📢", "⚠️", "✅", "🕌", "🏫", "🌾"], default: "📰" }
+      - { label: "Link URL", name: "url", widget: "string", required: false, hint: "Where to go when clicked (optional)" }
+      - { label: "Send Immediately", name: "sendNow", widget: "boolean", default: false, hint: "Send to all users now?" }
+      - { label: "Created", name: "date", widget: "datetime", format: "YYYY-MM-DD HH:mm:ss" }
