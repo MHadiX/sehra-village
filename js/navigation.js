@@ -25,29 +25,21 @@ function navigateTo(pageName) {
 // Load page content
 async function loadPage(pageName) {
   const contentDiv = document.getElementById('pageContent');
-  contentDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading...</p></div>';
   
-  try {
-    const response = await fetch(`pages/${pageName}.html`);
-    if (response.ok) {
-      const html = await response.html();
-      contentDiv.innerHTML = html;
-      
-      // Execute page-specific scripts
-      if (pageName === 'home') initHomePage();
-      if (pageName === 'news') initNewsPage();
-      if (pageName === 'gallery') initGalleryPage();
-      if (pageName === 'contact') initContactPage();
-    } else {
-      contentDiv.innerHTML = await fetchLocalPage(pageName);
-    }
-  } catch (error) {
-    contentDiv.innerHTML = await fetchLocalPage(pageName);
-  }
+  // Directly use local page templates
+  contentDiv.innerHTML = fetchLocalPage(pageName);
+  
+  // Execute page-specific scripts after content is loaded
+  setTimeout(() => {
+    if (pageName === 'home') initHomePage();
+    if (pageName === 'news') initNewsPage();
+    if (pageName === 'gallery') initGalleryPage();
+    if (pageName === 'contact') initContactPage();
+  }, 100);
 }
 
 // Fallback: load inline page content
-async function fetchLocalPage(pageName) {
+function fetchLocalPage(pageName) {
   const pageTemplates = {
     home: getHomePage(),
     about: getAboutPage(),

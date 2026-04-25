@@ -1,14 +1,17 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: mhadix/sehra-village  # Replace with your GitHub username
   branch: main
+  base_url: https://sehra-village-1.vercel.app  # Free auth service
+  auth_endpoint: auth
   
 # Sveltia CMS specific settings
 locale: en
-site_url: https://sehravillage.site
-logo_url: https://sehravillage.site/img/icon-192.png
+site_url: https://mhadix.github.io/sehra-village  # Replace with your username
+logo_url: /sehra-village/img/icon-192.png
 
 media_folder: "img/uploads"
-public_folder: "/img/uploads"
+public_folder: "/sehra-village/img/uploads"  # Note: GitHub Pages needs repo name prefix
 
 # Enable media library
 media_library:
