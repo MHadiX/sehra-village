@@ -9,17 +9,68 @@ function showToast(message, type = 'success') {
   setTimeout(() => toast.classList.remove('show'), 3500);
 }
 
-// Load CMS content
+// Load CMS content with proper path and cache busting
 async function loadCMSContent(type) {
+  const basePath = getBasePath();
   try {
-    const response = await fetch(`/content/${type}.json`);
+    // Add timestamp to prevent caching
+    const timestamp = Date.now();
+    const response = await fetch(`${basePath}/content/${type}.json?_=${timestamp}`);
+    
     if (response.ok) {
-      return await response.json();
+      const data = await response.json();
+      console.log(`${type} loaded:`, data);
+      return Array.isArray(data) ? data : [data];
+    } else {
+      console.log(`No ${type} content found, will try to load from folder`);
+      // Try to load from folder (news, gallery, etc.)
+      return await loadFromFolder(type);
     }
   } catch (error) {
-    console.log(`No ${type} content found`);
+    console.log(`Error loading ${type}:`, error);
+    return await loadFromFolder(type);
   }
-  return null;
+}
+
+// Load content from folder (for news, gallery, main-cards)
+async function loadFromFolder(type) {
+  const basePath = getBasePath();
+  const folderMap = {
+    'news': 'news',
+    'gallery': 'gallery',
+    'main-cards': 'main-cards',
+    'notice': 'notice.json',
+    'upcoming': 'upcoming.json'
+  };
+  
+  const folder = folderMap[type];
+  if (!folder) return null;
+  
+  // For single files (notice, upcoming)
+  if (folder.endsWith('.json')) {
+    try {
+      const response = await fetch(`${basePath}/content/${folder}?_=${Date.now()}`);
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch (error) {
+      console.log(`Error loading ${folder}:`, error);
+    }
+    return null;
+  }
+  
+  // For folders, we need to use GitHub API or have an index
+  // For now, return empty array
+  return [];
+}
+
+// Get base path helper
+function getBasePath() {
+  const path = window.location.pathname;
+  if (path.includes('/sehra-village')) {
+    return '/sehra-village';
+  }
+  return '';
 }
 
 // HOME PAGE
@@ -110,12 +161,12 @@ function getHomePage() {
       <button class="btn btn-sky" onclick="navigateTo('contact')">Get Directions →</button>
     </div>
     <div class="map-wrapper">
-      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d20240.72847417268!2d73.94193626442267!3d33.64276706996411!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38e03b12bc3fc0db%3A0x3c192af79ea359e1!2sSehra!5e1!3m2!1sen!2s!4v1777100746259!5m2!1sen!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=73.2,34.2,73.7,34.5&layer=mapnik&marker=34.37,73.47" title="Sehra Village Location" loading="lazy" allowfullscreen></iframe>
     </div>
     <div class="map-info-grid">
       <div class="map-info-card"><div class="map-info-icon">📍</div><div><h4>Location</h4><p id="map-location">AJK, Pakistan</p></div></div>
       <div class="map-info-card"><div class="map-info-icon">🗺️</div><div><h4>Province</h4><p id="map-province">AJK</p></div></div>
-      <div class="map-info-card"><div class="map-info-icon">🚗</div><div><h4>Nearest City</h4><p id="map-city">Kotli</p></div></div>
+      <div class="map-info-card"><div class="map-info-icon">🚗</div><div><h4>Nearest City</h4><p id="map-city">Muzaffarabad</p></div></div>
     </div>
   </div>
 </section>
@@ -263,7 +314,7 @@ function getContactPage() {
         <div class="contact-card"><div class="contact-card-icon">✉️</div><div><h4>Email</h4><p id="contact-email">contact@sehravillage.site</p></div></div>
         <div class="contact-card"><div class="contact-card-icon">🕐</div><div><h4>Office Hours</h4><p>Mon – Sat: 9:00 AM – 5:00 PM</p></div></div>
         <div class="map-wrapper">
-          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d20240.72847417268!2d73.94193626442267!3d33.64276706996411!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38e03b12bc3fc0db%3A0x3c192af79ea359e1!2sSehra!5e1!3m2!1sen!2s!4v1777100746259!5m2!1sen!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=73.2,34.2,73.7,34.5&layer=mapnik&marker=34.37,73.47" title="Sehra Village Map" loading="lazy" allowfullscreen></iframe>
         </div>
       </div>
       
@@ -272,8 +323,8 @@ function getContactPage() {
         <p>Fill in the form and we'll get back to you shortly.</p>
         <form id="contactForm" onsubmit="handleContactSubmit(event)">
           <div class="form-row">
-            <div class="form-group"><label>First Name*</label><input type="text" name="firstName" required placeholder="First Name"/></div>
-            <div class="form-group"><label>Last Name*</label><input type="text" name="lastName" required placeholder="Last Name"/></div>
+            <div class="form-group"><label>First Name*</label><input type="text" name="firstName" required placeholder="Ahmad"/></div>
+            <div class="form-group"><label>Last Name*</label><input type="text" name="lastName" required placeholder="Ali"/></div>
           </div>
           <div class="form-group"><label>Email Address*</label><input type="email" name="email" required placeholder="your@email.com"/></div>
           <div class="form-group">
@@ -297,69 +348,192 @@ function getContactPage() {
 
 // Initialize functions for each page
 async function initHomePage() {
-  // Load stats from config
-  document.getElementById('stat-population').textContent = siteConfig.population;
-  document.getElementById('stat-history').textContent = siteConfig.yearsHistory;
-  document.getElementById('stat-province').textContent = siteConfig.province;
-  document.getElementById('stat-country').textContent = siteConfig.country;
-  document.getElementById('map-location').textContent = siteConfig.location;
-  document.getElementById('map-province').textContent = siteConfig.province;
-  document.getElementById('map-city').textContent = siteConfig.nearestCity;
+  console.log('Initializing home page...');
   
-  // Load latest 3 news
-  const news = await loadCMSContent('news');
-  const newsList = document.getElementById('latestNewsList');
-  if (news && news.length > 0) {
-    newsList.innerHTML = news.slice(0, 3).map(item => createNewsCard(item)).join('');
-  } else {
-    newsList.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:2rem">No news available yet.</p>';
-  }
+  // Load stats from config
+  const statPop = document.getElementById('stat-population');
+  const statHist = document.getElementById('stat-history');
+  const statProv = document.getElementById('stat-province');
+  const statCountry = document.getElementById('stat-country');
+  
+  if (statPop) statPop.textContent = siteConfig.population;
+  if (statHist) statHist.textContent = siteConfig.yearsHistory;
+  if (statProv) statProv.textContent = siteConfig.province;
+  if (statCountry) statCountry.textContent = siteConfig.country;
+  
+  // Update map info
+  const mapLocation = document.getElementById('map-location');
+  const mapProvince = document.getElementById('map-province');
+  const mapCity = document.getElementById('map-city');
+  
+  if (mapLocation) mapLocation.textContent = siteConfig.location;
+  if (mapProvince) mapProvince.textContent = siteConfig.province;
+  if (mapCity) mapCity.textContent = siteConfig.nearestCity;
+  
+  // Load latest 3 news with GitHub API fallback
+  await loadAndDisplayNews(true);
   
   // Load main cards
-  const cards = await loadCMSContent('main-cards');
-  if (cards && cards.length > 0) {
-    document.getElementById('mainCardsGrid').innerHTML = cards.map(card => `
-      <div class="card">
-        <img class="card-img" src="${card.image}" alt="${card.title}"/>
-        <div class="card-body">
-          <div class="card-icon ${card.iconColor || 'sky'}">${card.icon || '🏡'}</div>
-          <h3>${card.title}</h3>
-          <p>${card.description}</p>
-          ${card.meta ? `<div class="card-meta">${card.meta}</div>` : ''}
-        </div>
-      </div>
-    `).join('');
+  await loadAndDisplayMainCards();
+}
+
+// Load and display news
+async function loadAndDisplayNews(homePageOnly = false) {
+  const basePath = getBasePath();
+  const newsList = homePageOnly ? document.getElementById('latestNewsList') : document.getElementById('allNewsList');
+  
+  if (!newsList) return;
+  
+  try {
+    // Try to load from GitHub API
+    const repoOwner = 'mhadix';
+    const repoName = 'sehra-village';
+    const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/content/news`;
+    
+    const response = await fetch(apiUrl);
+    
+    if (response.ok) {
+      const files = await response.json();
+      const newsPromises = files
+        .filter(file => file.name.endsWith('.json'))
+        .map(file => fetch(file.download_url).then(r => r.json()));
+      
+      const newsItems = await Promise.all(newsPromises);
+      
+      // Sort by date (newest first)
+      newsItems.sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      // Display news
+      const itemsToShow = homePageOnly ? newsItems.slice(0, 3) : newsItems;
+      
+      if (itemsToShow.length > 0) {
+        newsList.innerHTML = itemsToShow.map(item => createNewsCard(item, !homePageOnly)).join('');
+      } else {
+        newsList.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:2rem">No news available yet. Add news via the admin panel.</p>';
+      }
+      
+      // Update news count
+      const newsCount = document.getElementById('newsCount');
+      if (newsCount) newsCount.textContent = newsItems.length;
+      
+      console.log(`Loaded ${itemsToShow.length} news items`);
+    } else {
+      throw new Error('GitHub API failed');
+    }
+  } catch (error) {
+    console.log('Using fallback news:', error);
+    newsList.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:2rem">No news available yet. Add news via the admin panel.</p>';
+  }
+}
+
+// Load and display main cards
+async function loadAndDisplayMainCards() {
+  const basePath = getBasePath();
+  const cardsGrid = document.getElementById('mainCardsGrid');
+  
+  if (!cardsGrid) return;
+  
+  try {
+    const repoOwner = 'mhadix';
+    const repoName = 'sehra-village';
+    const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/content/main-cards`;
+    
+    const response = await fetch(apiUrl);
+    
+    if (response.ok) {
+      const files = await response.json();
+      const cardsPromises = files
+        .filter(file => file.name.endsWith('.json'))
+        .map(file => fetch(file.download_url).then(r => r.json()));
+      
+      const cards = await Promise.all(cardsPromises);
+      
+      // Sort by order
+      cards.sort((a, b) => (a.order || 999) - (b.order || 999));
+      
+      // Display cards
+      if (cards.length > 0) {
+        cardsGrid.innerHTML = cards.map(card => `
+          <div class="card">
+            <img class="card-img" src="${basePath}${card.image}" alt="${card.title}"/>
+            <div class="card-body">
+              <div class="card-icon ${card.iconColor || 'sky'}">${card.icon || '🏡'}</div>
+              <h3>${card.title}</h3>
+              <p>${card.description}</p>
+              ${card.meta ? `<div class="card-meta">${card.meta}</div>` : ''}
+            </div>
+          </div>
+        `).join('');
+        
+        console.log(`Loaded ${cards.length} main cards`);
+      }
+    }
+  } catch (error) {
+    console.log('Using default cards:', error);
   }
 }
 
 async function initNewsPage() {
-  const news = await loadCMSContent('news');
-  const newsList = document.getElementById('allNewsList');
-  const newsCount = document.getElementById('newsCount');
+  console.log('Initializing news page...');
   
-  if (news && news.length > 0) {
-    newsCount.textContent = news.length;
-    newsList.innerHTML = `<div style="display:flex;flex-direction:column;gap:1.5rem">${news.map(item => createNewsCard(item, true)).join('')}</div>`;
-  } else {
-    newsList.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:2rem">No news available yet.</p>';
+  // Load all news
+  await loadAndDisplayNews(false);
+  
+  // Load notice and upcoming from GitHub
+  await loadNoticeAndUpcoming();
+}
+
+async function loadNoticeAndUpcoming() {
+  const basePath = getBasePath();
+  const repoOwner = 'mhadix';
+  const repoName = 'sehra-village';
+  
+  // Load notice
+  try {
+    const noticeUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/content/notice.json`;
+    const response = await fetch(noticeUrl);
+    
+    if (response.ok) {
+      const fileData = await response.json();
+      const noticeResponse = await fetch(fileData.download_url);
+      const notice = await noticeResponse.json();
+      
+      if (notice && notice.enabled) {
+        const noticeSidebar = document.getElementById('noticeSidebar');
+        if (noticeSidebar) {
+          noticeSidebar.innerHTML = `
+            <h4 style="font-size:0.78rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;opacity:0.8;margin-bottom:0.6rem">📢 ${notice.title || 'Notice'}</h4>
+            <p style="font-size:0.88rem;line-height:1.6;opacity:0.9">${notice.content}</p>
+          `;
+        }
+      }
+    }
+  } catch (error) {
+    console.log('No notice found');
   }
   
-  // Load notice and upcoming from CMS
-  const notice = await loadCMSContent('notice');
-  const upcoming = await loadCMSContent('upcoming');
-  
-  if (notice) {
-    document.getElementById('noticeSidebar').innerHTML = `
-      <h4 style="font-size:0.78rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;opacity:0.8;margin-bottom:0.6rem">📢 ${notice.title || 'Notice'}</h4>
-      <p style="font-size:0.88rem;line-height:1.6;opacity:0.9">${notice.content}</p>
-    `;
-  }
-  
-  if (upcoming) {
-    document.getElementById('upcomingSidebar').innerHTML = `
-      <h4 style="font-size:0.78rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);margin-bottom:0.6rem">🎉 ${upcoming.title || 'Upcoming'}</h4>
-      <p style="font-size:0.88rem;line-height:1.6;color:var(--text-muted)">${upcoming.content}</p>
-    `;
+  // Load upcoming
+  try {
+    const upcomingUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/content/upcoming.json`;
+    const response = await fetch(upcomingUrl);
+    
+    if (response.ok) {
+      const fileData = await response.json();
+      const upcomingResponse = await fetch(fileData.download_url);
+      const upcoming = await upcomingResponse.json();
+      
+      if (upcoming && upcoming.enabled) {
+        const upcomingSidebar = document.getElementById('upcomingSidebar');
+        if (upcomingSidebar) {
+          upcomingSidebar.innerHTML = `
+            <h4 style="font-size:0.78rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);margin-bottom:0.6rem">🎉 ${upcoming.title || 'Upcoming'}</h4>
+            <p style="font-size:0.88rem;line-height:1.6;color:var(--text-muted)">${upcoming.content}</p>
+          `;
+        }
+      }
+    }
+  } catch (error) {
+    console.log('No upcoming event found');
   }
 }
 
@@ -431,7 +605,7 @@ async function handleContactSubmit(event) {
   const data = Object.fromEntries(formData);
   
   try {
-    const response = await fetch('https://sehra-village-1.vercel.app/api/send-email', {
+    const response = await fetch('https://sehra-village-api.vercel.app/api/send-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)

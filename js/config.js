@@ -19,14 +19,25 @@ const siteConfig = {
   mapZoom: 11
 };
 
+// Get base path for GitHub Pages
+function getBasePath() {
+  const path = window.location.pathname;
+  if (path.includes('/sehra-village')) {
+    return '/sehra-village';
+  }
+  return '';
+}
+
 // Load site settings from CMS
 async function loadSiteSettings() {
+  const basePath = getBasePath();
   try {
-    const response = await fetch('/settings/site.json');
+    const response = await fetch(`${basePath}/settings/site.json?_=${Date.now()}`);
     if (response.ok) {
       const data = await response.json();
       Object.assign(siteConfig, data);
       updateSiteSettings();
+      console.log('Settings loaded successfully');
     }
   } catch (error) {
     console.log('Using default settings');
@@ -50,7 +61,12 @@ function updateSiteSettings() {
   
   if (footerPhone) footerPhone.textContent = siteConfig.phone;
   if (footerEmail) footerEmail.textContent = siteConfig.email;
+  
+  console.log('UI updated with settings');
 }
+
+// Reload settings every 30 seconds
+setInterval(loadSiteSettings, 30000);
 
 // Initialize on load
 if (document.readyState === 'loading') {
