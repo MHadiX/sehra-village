@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="css/style.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
 <link rel="manifest" href="manifest.json"/>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <meta name="theme-color" content="#0e7fc0"/>
 <link rel="apple-touch-icon" href="img/icon-192.png"/>
 </head>
@@ -122,5 +123,16 @@
 <script src="js/pwa.js"></script>
 <script src="js/notifications.js"></script>
 <script src="js/main.js"></script>
+<script>
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on("init", user => {
+      if (!user) {
+        window.netlifyIdentity.on("login", () => {
+          document.location.href = "/admin/";
+        });
+      }
+    });
+  }
+</script>
 </body>
 </html>

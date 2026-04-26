@@ -12,27 +12,17 @@ const siteConfig = {
   schools: "3",
   mosques: "1",
   nearestCity: "Muzaffarabad",
-  
+
   // Map coordinates for AJK
   mapLat: 34.37,
   mapLng: 73.47,
   mapZoom: 11
 };
 
-// Get base path for GitHub Pages
-function getBasePath() {
-  const path = window.location.pathname;
-  if (path.includes('/sehra-village')) {
-    return '/sehra-village';
-  }
-  return '';
-}
-
 // Load site settings from CMS
 async function loadSiteSettings() {
-  const basePath = getBasePath();
   try {
-    const response = await fetch(`${basePath}/settings/site.json?_=${Date.now()}`);
+    const response = await fetch(`/settings/site.json?_=${Date.now()}`);
     if (response.ok) {
       const data = await response.json();
       Object.assign(siteConfig, data);
@@ -46,22 +36,20 @@ async function loadSiteSettings() {
 
 // Update UI with loaded settings
 function updateSiteSettings() {
-  // Update topbar
   const topbarLocation = document.getElementById('topbar-location');
   const topbarPhone = document.getElementById('topbar-phone');
   const topbarEmail = document.getElementById('topbar-email');
-  
+
   if (topbarLocation) topbarLocation.textContent = siteConfig.location;
   if (topbarPhone) topbarPhone.textContent = siteConfig.phone;
   if (topbarEmail) topbarEmail.textContent = siteConfig.email;
-  
-  // Update footer
+
   const footerPhone = document.getElementById('footer-phone');
   const footerEmail = document.getElementById('footer-email');
-  
+
   if (footerPhone) footerPhone.textContent = siteConfig.phone;
   if (footerEmail) footerEmail.textContent = siteConfig.email;
-  
+
   console.log('UI updated with settings');
 }
 
