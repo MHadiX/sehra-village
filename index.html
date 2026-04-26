@@ -8,9 +8,10 @@
 <link rel="stylesheet" href="css/style.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
 <link rel="manifest" href="manifest.json"/>
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <meta name="theme-color" content="#0e7fc0"/>
 <link rel="apple-touch-icon" href="img/icon-192.png"/>
+<!-- Netlify Identity Widget — required for CMS login -->
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
 
@@ -30,99 +31,97 @@
       <div class="logo-icon">🏡</div>
       <div class="logo-text">Sehra<small>Village, AJK</small></div>
     </div>
-    <ul class="nav-menu" id="navMenu">
-      <li><a class="active" onclick="navigateTo('home')">Home</a></li>
-      <li><a onclick="navigateTo('about')">About</a></li>
-      <li><a onclick="navigateTo('news')">News</a></li>
-      <li><a onclick="navigateTo('gallery')">Gallery</a></li>
-      <li><a onclick="navigateTo('contact')">Contact</a></li>
-    </ul>
-    <button class="hamburger" id="hamburger" onclick="toggleMobile()"><span></span><span></span><span></span></button>
+    <nav class="nav-menu">
+      <a onclick="navigateTo('home')">Home</a>
+      <a onclick="navigateTo('about')">About</a>
+      <a onclick="navigateTo('news')">News</a>
+      <a onclick="navigateTo('gallery')">Gallery</a>
+      <a onclick="navigateTo('contact')">Contact</a>
+    </nav>
+    <button class="hamburger" id="hamburger" onclick="toggleMobile()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a onclick="navigateTo('home');toggleMobile()">🏠 Home</a>
+    <a onclick="navigateTo('about');toggleMobile()">ℹ️ About</a>
+    <a onclick="navigateTo('news');toggleMobile()">📰 News</a>
+    <a onclick="navigateTo('gallery');toggleMobile()">🖼️ Gallery</a>
+    <a onclick="navigateTo('contact');toggleMobile()">📞 Contact</a>
   </div>
 </header>
 
-<!-- MOBILE MENU -->
-<div class="mobile-menu" id="mobileMenu">
-  <button class="mobile-close" onclick="toggleMobile()">✕</button>
-  <a onclick="navigateTo('home');toggleMobile()">🏠 Home</a>
-  <a onclick="navigateTo('about');toggleMobile()">📖 About</a>
-  <a onclick="navigateTo('news');toggleMobile()">📰 News</a>
-  <a onclick="navigateTo('gallery');toggleMobile()">🖼 Gallery</a>
-  <a onclick="navigateTo('contact');toggleMobile()">📬 Contact</a>
-</div>
+<!-- MAIN CONTENT -->
+<main id="pageContent"></main>
 
 <!-- NOTIFICATION PERMISSION BANNER -->
 <div class="notification-banner" id="notificationBanner" style="display:none">
-  <div class="notification-banner-content">
-    <p>📬 <strong>Stay Updated!</strong> Enable notifications to receive village news and updates.</p>
-    <div style="display:flex;gap:0.5rem">
-      <button class="btn btn-white" onclick="requestNotificationPermission()">Enable</button>
-      <button class="btn btn-outline-white" onclick="dismissNotificationBanner()">Later</button>
+  <div class="notif-content">
+    <span>🔔 Get notified about Sehra Village news and events</span>
+    <div>
+      <button onclick="requestNotificationPermission()" class="btn btn-sky" style="padding:0.4rem 1rem;font-size:0.85rem">Enable</button>
+      <button onclick="dismissNotificationBanner()" style="background:none;border:none;color:#fff;cursor:pointer;margin-left:0.5rem;font-size:1.2rem">✕</button>
     </div>
   </div>
 </div>
 
-<!-- PWA INSTALL BANNER -->
+<!-- PWA BANNER -->
 <div class="pwa-banner" id="pwaBanner" style="display:none">
-  <div class="pwa-banner-content">
-    <div style="display:flex;align-items:center;gap:1rem">
-      <div style="font-size:2.5rem">📱</div>
-      <div>
-        <h4 style="font-weight:800;margin-bottom:0.2rem">Install Sehra Village App</h4>
-        <p style="font-size:0.85rem;opacity:0.8">Get quick access and notifications on your device</p>
-      </div>
-    </div>
-    <div style="display:flex;gap:0.5rem;margin-top:1rem">
-      <button class="btn btn-sky" onclick="installPWA()">Install App</button>
-      <button class="btn btn-outline-white" onclick="dismissPWABanner()">Not Now</button>
+  <div class="notif-content">
+    <span>📱 Install Sehra Village app for quick access</span>
+    <div>
+      <button onclick="installPWA()" class="btn btn-sky" style="padding:0.4rem 1rem;font-size:0.85rem">Install</button>
+      <button onclick="dismissPWABanner()" style="background:none;border:none;color:#fff;cursor:pointer;margin-left:0.5rem;font-size:1.2rem">✕</button>
     </div>
   </div>
 </div>
 
-<!-- PAGE CONTENT -->
-<div id="pageContent"></div>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-top">
-    <div class="footer-brand">
-      <div class="f-logo">🏡 Sehra Village</div>
-      <p>A proud community in Azad Jammu & Kashmir, Pakistan — built on faith, family, and hard work.</p>
-    </div>
-    <div class="footer-col">
-      <h4>Pages</h4>
-      <ul>
-        <li><a onclick="navigateTo('home')">Home</a></li>
-        <li><a onclick="navigateTo('about')">About</a></li>
-        <li><a onclick="navigateTo('news')">News</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>More</h4>
-      <ul>
-        <li><a onclick="navigateTo('gallery')">Gallery</a></li>
-        <li><a onclick="navigateTo('contact')">Contact</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Contact</h4>
-      <ul>
-        <li><a>AJK, Pakistan</a></li>
-        <li><a id="footer-phone">+92 300 0000000</a></li>
-        <li><a id="footer-email">contact@sehravillage.site</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="footer-bottom">© 2026 Sehra Village. Built with ❤️ by the community.</div>
-</footer>
-
+<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
+<!-- Netlify Forms hidden form — enables contact form submissions -->
+<form name="contact" netlify netlify-honeypot="bot-field" hidden>
+  <input name="firstName"/>
+  <input name="lastName"/>
+  <input name="email"/>
+  <input name="subject"/>
+  <textarea name="message"></textarea>
+</form>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo-icon" style="font-size:1.5rem">🏡</div>
+      <div>
+        <div style="font-weight:800;font-size:1.1rem">Sehra Village</div>
+        <div style="opacity:0.7;font-size:0.85rem">AJK, Pakistan</div>
+      </div>
+    </div>
+    <div class="footer-links">
+      <a onclick="navigateTo('home')">Home</a>
+      <a onclick="navigateTo('about')">About</a>
+      <a onclick="navigateTo('news')">News</a>
+      <a onclick="navigateTo('gallery')">Gallery</a>
+      <a onclick="navigateTo('contact')">Contact</a>
+      <a href="/admin/" target="_blank">Admin</a>
+    </div>
+    <div class="footer-contact">
+      <p>📞 <span id="footer-phone">+92 300 0000000</span></p>
+      <p>✉ <span id="footer-email">contact@sehravillage.site</span></p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 Sehra Village. All rights reserved.</p>
+  </div>
+</footer>
+
 <script src="js/config.js"></script>
-<script src="js/navigation.js"></script>
-<script src="js/pwa.js"></script>
-<script src="js/notifications.js"></script>
 <script src="js/main.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/notifications.js"></script>
+<script src="js/pwa.js"></script>
+
+<!-- Netlify Identity redirect after CMS login -->
 <script>
   if (window.netlifyIdentity) {
     window.netlifyIdentity.on("init", user => {
