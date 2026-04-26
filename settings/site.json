@@ -1,15 +1,15 @@
 {
+  "mosques": "7",
+  "mapLat": 34.37,
+  "mapLng": 73.47,
+  "nearestCity": "Tatta Pani",
+  "population": "5,000+",
+  "phone": "0300 0000000",
+  "province": "AJK",
   "siteName": "Sehra Village",
   "location": "Sehra Village, AJK, Pakistan",
-  "phone": "0300 0000000",
-  "email": "contact@sehravillage.site",
-  "province": "AJK",
   "country": "Pakistan",
-  "population": "5,000+",
+  "email": "contact@sehravillage.site",
   "yearsHistory": "150+",
-  "schools": "6",
-  "mosques": "7",
-  "nearestCity": "Kotli",
-  "mapLat": 34.37,
-  "mapLng": 73.47
+  "schools": "6"
 }
