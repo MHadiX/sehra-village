@@ -32,6 +32,7 @@ async function loadPage(pageName) {
   // Execute page-specific scripts after content is loaded
   setTimeout(() => {
     if (pageName === 'home') initHomePage();
+    if (pageName === 'about') initAboutPage();
     if (pageName === 'news') initNewsPage();
     if (pageName === 'gallery') initGalleryPage();
     if (pageName === 'contact') initContactPage();

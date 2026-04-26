@@ -1,11 +1,7 @@
 // Main application logic and page templates
 
-// Get base path for GitHub Pages
+// Base path (Netlify serves from root)
 function getBasePath() {
-  const path = window.location.pathname;
-  if (path.includes('/sehra-village')) {
-    return '/sehra-village';
-  }
   return '';
 }
 
@@ -883,6 +879,38 @@ async function initHomePage() {
   await loadAndDisplayMainCards();
 }
 
+async function initAboutPage() {
+  console.log('Initializing about page...');
+
+  // Load settings from CMS (settings/site.json served statically on Netlify)
+  try {
+    const response = await fetch(`/settings/site.json?_=${Date.now()}`);
+    if (response.ok) {
+      const s = await response.json();
+
+      const els = {
+        'about-population': s.population,
+        'about-history':    s.yearsHistory,
+        'about-schools':    s.schools,
+        'about-mosques':    s.mosques,
+        'about-province':   s.province,
+        'about-country':    s.country,
+        'about-city':       s.nearestCity,
+        'about-location':   s.location
+      };
+
+      Object.entries(els).forEach(([id, val]) => {
+        const el = document.getElementById(id);
+        if (el && val) el.textContent = val;
+      });
+
+      console.log('About page settings loaded:', s);
+    }
+  } catch (error) {
+    console.log('About page using default settings:', error);
+  }
+}
+
 // Load and display news
 async function loadAndDisplayNews(homePageOnly = false) {
   const basePath = getBasePath();
@@ -1044,21 +1072,42 @@ async function loadNoticeAndUpcoming() {
 }
 
 async function initGalleryPage() {
-  const gallery = await loadCMSContent('gallery');
   const galleryGrid = document.getElementById('galleryGrid');
-  
-  if (gallery && gallery.length > 0) {
-    galleryGrid.innerHTML = gallery.map(item => `
-      <div class="g-item">
-        <img src="${item.image}" alt="${item.title}"/>
-        <div class="g-item-caption">
-          <h4>${item.title}</h4>
-          <p>${item.description}</p>
+  if (!galleryGrid) return;
+
+  try {
+    const repoOwner = 'mhadix';
+    const repoName = 'sehra-village';
+    const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/content/gallery`;
+
+    const response = await fetch(apiUrl);
+    if (!response.ok) throw new Error('GitHub API failed');
+
+    const files = await response.json();
+    const items = await Promise.all(
+      files
+        .filter(f => f.name.endsWith('.json'))
+        .map(f => fetch(f.download_url).then(r => r.json()))
+    );
+
+    items.sort((a, b) => (a.order || 999) - (b.order || 999));
+
+    if (items.length > 0) {
+      galleryGrid.innerHTML = items.map(item => `
+        <div class="g-item">
+          <img src="${item.image}" alt="${item.title}" onerror="this.src='https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80'"/>
+          <div class="g-item-caption">
+            <h4>${item.title}</h4>
+            <p>${item.description || ''}</p>
+          </div>
         </div>
-      </div>
-    `).join('');
-  } else {
-    galleryGrid.innerHTML = '<p style="grid-column:1/-1;color:var(--text-muted);text-align:center;padding:2rem">No gallery images yet.</p>';
+      `).join('');
+    } else {
+      galleryGrid.innerHTML = '<p style="grid-column:1/-1;color:var(--text-muted);text-align:center;padding:2rem">No photos yet. Add photos via the admin panel.</p>';
+    }
+  } catch (error) {
+    console.log('Gallery load error:', error);
+    galleryGrid.innerHTML = '<p style="grid-column:1/-1;color:var(--text-muted);text-align:center;padding:2rem">No photos yet. Add photos via the admin panel.</p>';
   }
 }
 
@@ -1111,7 +1160,7 @@ async function handleContactSubmit(event) {
   const data = Object.fromEntries(formData);
   
   try {
-    const response = await fetch('https://sehra-village-api.vercel.app/api/send-email', {
+    const response = await fetch('/.netlify/functions/send-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
