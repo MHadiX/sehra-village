@@ -1,87 +1,84 @@
-const CACHE_NAME = 'sehra-village-v1';
-const urlsToCache = [
-  '/',
-  '/css/style.css',
-  '/js/config.js',
-  '/js/navigation.js',
-  '/js/pwa.js',
-  '/js/notifications.js',
-  '/js/main.js',
-  '/manifest.json'
-];
+// Service Worker — Network-first strategy
+// Ensures fresh content is always loaded; falls back to cache only when offline
 
-// Install Service Worker
+const CACHE_NAME = 'sehra-v3';
+const STATIC_ASSETS = ['/css/style.css', '/manifest.json', '/img/icon-192.png'];
+
 self.addEventListener('install', event => {
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
+    caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS).catch(() => {}))
   );
 });
 
-// Fetch with cache-first strategy
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => response || fetch(event.request))
-  );
-});
-
-// Activate and clean old caches
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+
+  // Never intercept GitHub API / raw content / netlify functions — always network
+  if (
+    url.hostname.includes('github') ||
+    url.hostname.includes('fonts.') ||
+    url.hostname.includes('identity.netlify') ||
+    url.pathname.startsWith('/.netlify/')
+  ) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+
+  // HTML and JS — network first, fall back to cache
+  if (
+    event.request.mode === 'navigate' ||
+    url.pathname.endsWith('.js') ||
+    url.pathname.endsWith('.html') ||
+    url.pathname === '/'
+  ) {
+    event.respondWith(
+      fetch(event.request)
+        .then(res => {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+          return res;
         })
-      );
-    })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Everything else — cache first
+  event.respondWith(
+    caches.match(event.request).then(cached =>
+      cached || fetch(event.request).then(res => {
+        const clone = res.clone();
+        caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+        return res;
+      })
+    )
   );
 });
 
 // Push notification handler
 self.addEventListener('push', event => {
   const data = event.data ? event.data.json() : {};
-  const title = data.title || 'Sehra Village Update';
-  const options = {
-    body: data.body || 'New update from Sehra Village',
-    icon: '/img/icon-192.png',
-    badge: '/img/icon-192.png',
-    vibrate: [200, 100, 200],
-    data: data.url || '/',
-    actions: [
-      { action: 'open', title: 'View' },
-      { action: 'close', title: 'Close' }
-    ]
-  };
-  
   event.waitUntil(
-    self.registration.showNotification(title, options)
+    self.registration.showNotification(data.title || 'Sehra Village', {
+      body: data.body || 'New update from Sehra Village',
+      icon: '/img/icon-192.png',
+      badge: '/img/icon-192.png',
+      vibrate: [200, 100, 200],
+      data: { url: data.url || '/' }
+    })
   );
 });
 
-// Notification click handler
 self.addEventListener('notificationclick', event => {
   event.notification.close();
-  
-  if (event.action === 'open' || !event.action) {
-    event.waitUntil(
-      clients.openWindow(event.notification.data)
-    );
-  }
+  event.waitUntil(clients.openWindow(event.notification.data.url));
 });
-
-// Background sync for offline form submissions
-self.addEventListener('sync', event => {
-  if (event.tag === 'contact-form-sync') {
-    event.waitUntil(syncContactForms());
-  }
-});
-
-async function syncContactForms() {
-  // Get pending form submissions from IndexedDB
-  // Send them when back online
-  console.log('Syncing contact forms...');
-}
