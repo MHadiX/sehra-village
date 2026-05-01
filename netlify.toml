@@ -5,6 +5,56 @@
 [build.environment]
   NODE_VERSION = "18"
 
+# Static files — serve directly, NO redirect
+[[redirects]]
+  from = "/content/*"
+  to = "/content/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/settings/*"
+  to = "/settings/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/img/*"
+  to = "/img/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/css/*"
+  to = "/css/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/js/*"
+  to = "/js/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/admin/*"
+  to = "/admin/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/manifest.json"
+  to = "/manifest.json"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/sw.js"
+  to = "/sw.js"
+  status = 200
+  force = true
+
+# SPA fallback — only for actual page routes
 [[redirects]]
   from = "/*"
   to = "/index.html"
@@ -15,35 +65,28 @@
   [headers.values]
     X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
 
-# HTML — never cache
-[[headers]]
-  for = "/*.html"
-  [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate"
-
-# JS/CSS — short cache so fixes deploy quickly
 [[headers]]
   for = "/js/*"
   [headers.values]
-    Cache-Control = "public, max-age=300"
+    Cache-Control = "public, max-age=60"
 
 [[headers]]
   for = "/css/*"
   [headers.values]
-    Cache-Control = "public, max-age=300"
+    Cache-Control = "public, max-age=60"
 
-# Images — longer cache is fine
+[[headers]]
+  for = "/content/*"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/settings/*"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
 [[headers]]
   for = "/img/*"
   [headers.values]
     Cache-Control = "public, max-age=86400"
-
-# Netlify Functions — allow CORS
-[[headers]]
-  for = "/.netlify/functions/*"
-  [headers.values]
-    Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
-    Access-Control-Allow-Headers = "Content-Type"

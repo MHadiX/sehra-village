@@ -1,142 +1,104 @@
-// ============================================================
-// SEHRA VILLAGE — notifications.js
-// Push notifications using Web Push API + Netlify Functions
-// VAPID keys must be set in Netlify environment variables:
-//   VAPID_PUBLIC_KEY  = BAqvL1NjrCa42Q1mm-oB_15pMEpbj4onjqSxsZBvXUqwZAdVnsJ_lmSf3gXVOeaRimJMRuhU6KNGJXra2taCO_I
-//   VAPID_PRIVATE_KEY = Kpzuz1FJJJjXuJ2vy53VAD4N9WXPUsoeG4bvxsJzaEY
-// ============================================================
+// notifications.js — Push notifications for Sehra Village
+// Uses Web Push API. VAPID public key matches the private key set in Netlify env vars.
 
 const VAPID_PUBLIC_KEY = 'BAqvL1NjrCa42Q1mm-oB_15pMEpbj4onjqSxsZBvXUqwZAdVnsJ_lmSf3gXVOeaRimJMRuhU6KNGJXra2taCO_I';
 
-// Show notification permission banner after 5s (if not already decided)
+// Show banner 5s after load if permission not yet decided
 window.addEventListener('load', () => {
   if (!('Notification' in window)) return;
   if (Notification.permission === 'default' && !localStorage.getItem('notif-dismissed')) {
     setTimeout(() => {
-      const banner = document.getElementById('notificationBanner');
-      if (banner) banner.style.display = 'block';
+      const b = document.getElementById('notificationBanner');
+      if (b) b.style.display = 'flex';
     }, 5000);
   }
 });
 
 async function requestNotificationPermission() {
   const banner = document.getElementById('notificationBanner');
-  if (!('Notification' in window)) {
-    showToast('Notifications not supported on this device', 'error');
-    return;
-  }
+  if (!('Notification' in window)) { showToast('Notifications not supported on this device', 'error'); return; }
 
-  const permission = await Notification.requestPermission();
+  const perm = await Notification.requestPermission();
+  if (banner) banner.style.display = 'none';
+  localStorage.setItem('notif-dismissed', '1');
 
-  if (permission === 'granted') {
-    if (banner) banner.style.display = 'none';
-    localStorage.setItem('notif-dismissed', 'true');
+  if (perm === 'granted') {
     showToast('🔔 Notifications enabled!', 'success');
     await subscribeToPush();
-    // Welcome notification
     new Notification('Welcome to Sehra Village! 🏡', {
-      body: 'You will now receive village news and event updates.',
+      body: 'You will now receive village news and updates.',
       icon: '/img/icon-192.png'
     });
+    // Start checking for new content
+    localStorage.setItem('last-news-check', Date.now().toString());
+    setInterval(checkForNewContent, 30 * 60 * 1000);
   } else {
-    if (banner) banner.style.display = 'none';
-    localStorage.setItem('notif-dismissed', 'true');
-    showToast('Notifications blocked. Enable in browser settings.', 'error');
+    showToast('Notifications blocked. You can enable them in browser settings.', 'error');
   }
 }
 
 function dismissNotificationBanner() {
-  const banner = document.getElementById('notificationBanner');
-  if (banner) banner.style.display = 'none';
-  localStorage.setItem('notif-dismissed', 'true');
+  const b = document.getElementById('notificationBanner');
+  if (b) b.style.display = 'none';
+  localStorage.setItem('notif-dismissed', '1');
 }
 
-// Subscribe to Web Push
 async function subscribeToPush() {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-    console.log('Push not supported');
-    return;
-  }
-
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
   try {
-    const registration = await navigator.serviceWorker.ready;
-    let subscription = await registration.pushManager.getSubscription();
-
-    if (!subscription) {
-      subscription = await registration.pushManager.subscribe({
+    const reg = await navigator.serviceWorker.ready;
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) {
+      sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
       });
     }
-
-    // Save subscription to Netlify Function
-    const res = await fetch('/.netlify/functions/save-subscription', {
+    await fetch('/.netlify/functions/save-subscription', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(subscription)
+      body: JSON.stringify(sub)
     });
-
-    if (res.ok) {
-      console.log('Push subscription saved');
-    } else {
-      console.warn('Push subscription save returned:', res.status);
-    }
-  } catch (error) {
-    console.error('Push subscription failed:', error);
-    // Don't show error to user — notifications still work locally
+  } catch(e) {
+    console.warn('Push subscribe failed:', e.message);
   }
 }
 
-// Check for new content and send local notification
-// Runs every 30 minutes if permission granted
+// Check content-index.json for new news since last check
 async function checkForNewContent() {
   if (Notification.permission !== 'granted') return;
-
   try {
+    const res = await fetch(`/content-index.json?t=${Date.now()}`);
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data.news || data.news.length === 0) return;
+
     const lastCheck = parseInt(localStorage.getItem('last-news-check') || '0');
-    const files = await fetch(
-      `https://api.github.com/repos/mhadix/sehra-village/contents/content/news`
-    ).then(r => r.json());
-
-    if (!Array.isArray(files) || files.length === 0) return;
-
-    // Get latest file by name (dates are in filenames: YYYY-MM-DD-slug.json)
-    const sorted = files
-      .filter(f => f.name.endsWith('.json'))
-      .sort((a,b) => b.name.localeCompare(a.name));
-
-    if (sorted.length === 0) return;
-
-    const latest = await fetch(sorted[0].download_url).then(r => r.json());
+    const latest = data.news[0]; // already sorted newest-first by build-index.js
     const newsTime = new Date(latest.date).getTime();
 
     if (newsTime > lastCheck && lastCheck > 0) {
       new Notification('New Village News! 📰', {
         body: latest.title,
         icon: '/img/icon-192.png',
-        badge: '/img/icon-192.png',
-        tag: 'news-update'
+        tag: 'sehra-news'
       });
     }
-
     localStorage.setItem('last-news-check', Date.now().toString());
-  } catch(e) {
-    console.log('News check skipped:', e.message);
-  }
+  } catch(e) { /* silent */ }
 }
 
-// Start periodic check
-if ('Notification' in window && Notification.permission === 'granted') {
+// Resume periodic check if already granted
+if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
   checkForNewContent();
   setInterval(checkForNewContent, 30 * 60 * 1000);
 }
 
-// VAPID key helper
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64  = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-  const rawData = window.atob(base64);
-  const output  = new Uint8Array(rawData.length);
-  for (let i = 0; i < rawData.length; i++) output[i] = rawData.charCodeAt(i);
-  return output;
+function urlBase64ToUint8Array(b64) {
+  const pad = '='.repeat((4 - b64.length % 4) % 4);
+  const base64 = (b64 + pad).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64);
+  const arr = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+  return arr;
 }

@@ -1,0 +1,9 @@
+{
+  "title": "Golden Farmlands",
+  "description": "Rich agricultural fields sustaining families through wheat, rice, and fresh vegetables.",
+  "image": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80",
+  "icon": "🌾",
+  "iconColor": "gold",
+  "meta": "Primary livelihood",
+  "order": 2
+}

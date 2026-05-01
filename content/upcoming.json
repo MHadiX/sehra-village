@@ -1,6 +1,6 @@
 {
-  "eventDate": "2026-04-26T16:07:01.455Z",
-  "title": "Eid",
-  "content": "Eid Celebration",
-  "enabled": true
+  "title": "Upcoming Event",
+  "content": "Community meeting scheduled. Details will be announced soon.",
+  "enabled": true,
+  "eventDate": "2024-12-31 00:00:00"
 }

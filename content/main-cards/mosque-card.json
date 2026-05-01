@@ -1,0 +1,9 @@
+{
+  "title": "Historic Mosque",
+  "description": "The spiritual and social heart of our community, a place of worship and gathering for generations.",
+  "image": "https://images.unsplash.com/photo-1542401886-65d6c61db217?w=600&q=80",
+  "icon": "🕌",
+  "iconColor": "sky",
+  "meta": "Est. over 100 years ago",
+  "order": 1
+}

@@ -1,0 +1,114 @@
+{
+  "lastUpdated": "2026-05-01T10:03:52.055Z",
+  "settings": {
+    "siteName": "Sehra Village",
+    "location": "Sehra Village, AJK, Pakistan",
+    "phone": "+92 300 0000000",
+    "email": "contact@sehravillage.site",
+    "province": "AJK",
+    "country": "Pakistan",
+    "population": "5,000+",
+    "yearsHistory": "100+",
+    "schools": "3",
+    "mosques": "1",
+    "nearestCity": "Muzaffarabad",
+    "mapLat": 34.37,
+    "mapLng": 73.47
+  },
+  "news": [
+    {
+      "title": "New Road Development Project Begins",
+      "content": "Construction work on the main village road has officially started. The project aims to improve connectivity and ease of travel for all residents. Expected completion is within three months.",
+      "category": "Development",
+      "date": "2024-01-20 09:00:00",
+      "author": "Village Council",
+      "image": "",
+      "featured": false
+    },
+    {
+      "title": "Welcome to Sehra Village Website",
+      "content": "We are proud to launch the official website for Sehra Village. This platform will serve as a hub for all village news, events, and community updates. Stay connected with your roots and fellow villagers through this digital home.",
+      "category": "Community",
+      "date": "2024-01-15 10:00:00",
+      "author": "Village Council",
+      "image": "",
+      "featured": true
+    }
+  ],
+  "gallery": [
+    {
+      "title": "Sehra Village Landscape",
+      "description": "A beautiful view of our village surrounded by the green hills of AJK.",
+      "image": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+      "date": "2024-01-01 00:00:00",
+      "order": 1,
+      "tags": [
+        "nature",
+        "landscape"
+      ]
+    },
+    {
+      "title": "Village Mosque",
+      "description": "The historic mosque at the heart of Sehra Village community.",
+      "image": "https://images.unsplash.com/photo-1542401886-65d6c61db217?w=800&q=80",
+      "date": "2024-01-01 00:00:00",
+      "order": 2,
+      "tags": [
+        "mosque",
+        "culture"
+      ]
+    },
+    {
+      "title": "Golden Farmlands",
+      "description": "The fertile farmlands of Sehra Village during harvest season.",
+      "image": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80",
+      "date": "2024-01-01 00:00:00",
+      "order": 3,
+      "tags": [
+        "agriculture",
+        "nature"
+      ]
+    }
+  ],
+  "mainCards": [
+    {
+      "title": "Historic Mosque",
+      "description": "The spiritual and social heart of our community, a place of worship and gathering for generations.",
+      "image": "https://images.unsplash.com/photo-1542401886-65d6c61db217?w=600&q=80",
+      "icon": "🕌",
+      "iconColor": "sky",
+      "meta": "Est. over 100 years ago",
+      "order": 1
+    },
+    {
+      "title": "Golden Farmlands",
+      "description": "Rich agricultural fields sustaining families through wheat, rice, and fresh vegetables.",
+      "image": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80",
+      "icon": "🌾",
+      "iconColor": "gold",
+      "meta": "Primary livelihood",
+      "order": 2
+    },
+    {
+      "title": "Village School",
+      "description": "Dedicated to educating the next generation of Sehra's children with quality learning.",
+      "image": "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&q=80",
+      "icon": "🏫",
+      "iconColor": "green",
+      "meta": "Education for all",
+      "order": 3
+    }
+  ],
+  "notice": {
+    "title": "Notice",
+    "content": "Welcome to the official Sehra Village website. Stay tuned for important announcements.",
+    "enabled": true,
+    "updated": "2024-01-01 00:00:00"
+  },
+  "upcoming": {
+    "title": "Upcoming Event",
+    "content": "Community meeting scheduled. Details will be announced soon.",
+    "enabled": true,
+    "eventDate": "2024-12-31 00:00:00"
+  }
+}

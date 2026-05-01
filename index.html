@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Sehra Village — AJK, Pakistan</title>
-<meta name="description" content="Welcome to Sehra Village in Azad Jammu & Kashmir, Pakistan. Discover our community, culture, and heritage."/>
-<link rel="stylesheet" href="css/style.css"/>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
-<link rel="manifest" href="manifest.json"/>
-<meta name="theme-color" content="#0e7fc0"/>
-<link rel="apple-touch-icon" href="img/icon-192.png"/>
-<!-- Netlify Identity Widget — required for CMS login -->
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sehra Village — AJK, Pakistan</title>
+  <meta name="description" content="Official website of Sehra Village, Azad Jammu and Kashmir, Pakistan."/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="theme-color" content="#0e7fc0"/>
+  <link rel="apple-touch-icon" href="img/icon-192.png"/>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
 
@@ -27,7 +26,7 @@
 <!-- HEADER -->
 <header>
   <div class="navbar">
-    <div class="logo" onclick="navigateTo('home')">
+    <div class="logo" onclick="navigateTo('home')" style="cursor:pointer">
       <div class="logo-icon">🏡</div>
       <div class="logo-text">Sehra<small>Village, AJK</small></div>
     </div>
@@ -51,27 +50,27 @@
   </div>
 </header>
 
-<!-- MAIN CONTENT -->
+<!-- MAIN PAGE CONTENT -->
 <main id="pageContent"></main>
 
-<!-- NOTIFICATION PERMISSION BANNER -->
+<!-- NOTIFICATION BANNER -->
 <div class="notification-banner" id="notificationBanner" style="display:none">
-  <div class="notif-content">
+  <div class="notification-banner-content">
     <span>🔔 Get notified about Sehra Village news and events</span>
-    <div>
+    <div style="display:flex;gap:0.5rem;align-items:center">
       <button onclick="requestNotificationPermission()" class="btn btn-sky" style="padding:0.4rem 1rem;font-size:0.85rem">Enable</button>
-      <button onclick="dismissNotificationBanner()" style="background:none;border:none;color:#fff;cursor:pointer;margin-left:0.5rem;font-size:1.2rem">✕</button>
+      <button onclick="dismissNotificationBanner()" style="background:none;border:none;color:#fff;cursor:pointer;font-size:1.3rem;line-height:1">✕</button>
     </div>
   </div>
 </div>
 
-<!-- PWA BANNER -->
+<!-- PWA INSTALL BANNER -->
 <div class="pwa-banner" id="pwaBanner" style="display:none">
-  <div class="notif-content">
+  <div class="pwa-banner-content">
     <span>📱 Install Sehra Village app for quick access</span>
-    <div>
+    <div style="display:flex;gap:0.5rem;align-items:center">
       <button onclick="installPWA()" class="btn btn-sky" style="padding:0.4rem 1rem;font-size:0.85rem">Install</button>
-      <button onclick="dismissPWABanner()" style="background:none;border:none;color:#fff;cursor:pointer;margin-left:0.5rem;font-size:1.2rem">✕</button>
+      <button onclick="dismissPWABanner()" style="background:none;border:none;color:#fff;cursor:pointer;font-size:1.3rem;line-height:1">✕</button>
     </div>
   </div>
 </div>
@@ -79,8 +78,9 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- Netlify Forms hidden form — enables contact form submissions -->
+<!-- NETLIFY FORMS — hidden registration form so Netlify detects it at deploy time -->
 <form name="contact" netlify netlify-honeypot="bot-field" hidden>
+  <input name="bot-field"/>
   <input name="firstName"/>
   <input name="lastName"/>
   <input name="email"/>
@@ -88,6 +88,7 @@
   <textarea name="message"></textarea>
 </form>
 
+<!-- FOOTER -->
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
@@ -120,16 +121,10 @@
 <script src="js/navigation.js"></script>
 <script src="js/notifications.js"></script>
 <script src="js/pwa.js"></script>
-
-<!-- Netlify Identity redirect after CMS login -->
 <script>
   if (window.netlifyIdentity) {
-    window.netlifyIdentity.on("init", user => {
-      if (!user) {
-        window.netlifyIdentity.on("login", () => {
-          document.location.href = "/admin/";
-        });
-      }
+    window.netlifyIdentity.on('init', user => {
+      if (!user) window.netlifyIdentity.on('login', () => { document.location.href = '/admin/'; });
     });
   }
 </script>

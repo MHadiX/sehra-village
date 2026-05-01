@@ -1,103 +1,68 @@
+// build-index.js
+// Run by GitHub Action whenever CMS saves content.
+// Regenerates:
+//   - content/news/index.json        (list of filenames)
+//   - content/gallery/index.json     (list of filenames)
+//   - content/main-cards/index.json  (list of filenames)
+//   - content/notifications/index.json
+//   - content-index.json             (all data combined, used as fallback)
+
 const fs = require('fs');
 const path = require('path');
 
-// Build content index from all JSON files
-function buildIndex() {
-  const index = {
-    settings: null,
-    news: [],
-    gallery: [],
-    mainCards: [],
-    notice: null,
-    upcoming: null,
-    lastUpdated: new Date().toISOString()
-  };
-  
-  // Load settings
-  try {
-    const settingsPath = path.join(__dirname, 'settings', 'site.json');
-    if (fs.existsSync(settingsPath)) {
-      index.settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
-    }
-  } catch (error) {
-    console.log('No settings found');
-  }
-  
-  // Load news
-  try {
-    const newsDir = path.join(__dirname, 'content', 'news');
-    if (fs.existsSync(newsDir)) {
-      const files = fs.readdirSync(newsDir).filter(f => f.endsWith('.json'));
-      index.news = files.map(file => {
-        const content = JSON.parse(fs.readFileSync(path.join(newsDir, file), 'utf8'));
-        return { ...content, _file: file };
-      }).sort((a, b) => new Date(b.date) - new Date(a.date));
-    }
-  } catch (error) {
-    console.log('No news found');
-  }
-  
-  // Load gallery
-  try {
-    const galleryDir = path.join(__dirname, 'content', 'gallery');
-    if (fs.existsSync(galleryDir)) {
-      const files = fs.readdirSync(galleryDir).filter(f => f.endsWith('.json'));
-      index.gallery = files.map(file => {
-        const content = JSON.parse(fs.readFileSync(path.join(galleryDir, file), 'utf8'));
-        return { ...content, _file: file };
-      }).sort((a, b) => (a.order || 999) - (b.order || 999));
-    }
-  } catch (error) {
-    console.log('No gallery found');
-  }
-  
-  // Load main cards
-  try {
-    const cardsDir = path.join(__dirname, 'content', 'main-cards');
-    if (fs.existsSync(cardsDir)) {
-      const files = fs.readdirSync(cardsDir).filter(f => f.endsWith('.json'));
-      index.mainCards = files.map(file => {
-        const content = JSON.parse(fs.readFileSync(path.join(cardsDir, file), 'utf8'));
-        return { ...content, _file: file };
-      }).sort((a, b) => (a.order || 999) - (b.order || 999));
-    }
-  } catch (error) {
-    console.log('No main cards found');
-  }
-  
-  // Load notice
-  try {
-    const noticePath = path.join(__dirname, 'content', 'notice.json');
-    if (fs.existsSync(noticePath)) {
-      index.notice = JSON.parse(fs.readFileSync(noticePath, 'utf8'));
-    }
-  } catch (error) {
-    console.log('No notice found');
-  }
-  
-  // Load upcoming
-  try {
-    const upcomingPath = path.join(__dirname, 'content', 'upcoming.json');
-    if (fs.existsSync(upcomingPath)) {
-      index.upcoming = JSON.parse(fs.readFileSync(upcomingPath, 'utf8'));
-    }
-  } catch (error) {
-    console.log('No upcoming found');
-  }
-  
-  // Write index file
-  fs.writeFileSync(
-    path.join(__dirname, 'content-index.json'),
-    JSON.stringify(index, null, 2)
-  );
-  
-  console.log('✅ Content index built successfully!');
-  console.log(`   - News: ${index.news.length} items`);
-  console.log(`   - Gallery: ${index.gallery.length} items`);
-  console.log(`   - Main Cards: ${index.mainCards.length} items`);
-  console.log(`   - Settings: ${index.settings ? 'loaded' : 'none'}`);
-  console.log(`   - Notice: ${index.notice ? 'loaded' : 'none'}`);
-  console.log(`   - Upcoming: ${index.upcoming ? 'loaded' : 'none'}`);
+function readJsonDir(dir) {
+  if (!fs.existsSync(dir)) { fs.mkdirSync(dir, { recursive: true }); return []; }
+  return fs.readdirSync(dir)
+    .filter(f => f.endsWith('.json') && f !== 'index.json')
+    .map(file => {
+      try {
+        return { file, data: JSON.parse(fs.readFileSync(path.join(dir, file), 'utf8')) };
+      } catch(e) {
+        console.warn(`  Skipping invalid JSON: ${file}`);
+        return null;
+      }
+    })
+    .filter(Boolean);
 }
 
-buildIndex();
+function writeIndex(dir, filenames) {
+  fs.writeFileSync(path.join(dir, 'index.json'), JSON.stringify(filenames, null, 2));
+  console.log(`  index.json updated: [${filenames.join(', ')}]`);
+}
+
+const root = __dirname;
+
+// NEWS
+const newsDir = path.join(root, 'content', 'news');
+const newsItems = readJsonDir(newsDir).sort((a,b) => new Date(b.data.date) - new Date(a.data.date));
+writeIndex(newsDir, newsItems.map(i => i.file));
+
+// GALLERY
+const galleryDir = path.join(root, 'content', 'gallery');
+const galleryItems = readJsonDir(galleryDir).sort((a,b) => (a.data.order||999)-(b.data.order||999));
+writeIndex(galleryDir, galleryItems.map(i => i.file));
+
+// MAIN-CARDS
+const cardsDir = path.join(root, 'content', 'main-cards');
+const cardItems = readJsonDir(cardsDir).sort((a,b) => (a.data.order||999)-(b.data.order||999));
+writeIndex(cardsDir, cardItems.map(i => i.file));
+
+// NOTIFICATIONS
+const notifsDir = path.join(root, 'content', 'notifications');
+const notifItems = readJsonDir(notifsDir).sort((a,b) => new Date(b.data.date) - new Date(a.data.date));
+writeIndex(notifsDir, notifItems.map(i => i.file));
+
+// COMBINED content-index.json (fallback / used by notifications checker)
+const index = {
+  lastUpdated: new Date().toISOString(),
+  settings: (() => { try { return JSON.parse(fs.readFileSync(path.join(root,'settings','site.json'),'utf8')); } catch(e){ return null; } })(),
+  news:      newsItems.map(i => i.data),
+  gallery:   galleryItems.map(i => i.data),
+  mainCards: cardItems.map(i => i.data),
+  notice:    (() => { try { return JSON.parse(fs.readFileSync(path.join(root,'content','notice.json'),'utf8')); } catch(e){ return null; } })(),
+  upcoming:  (() => { try { return JSON.parse(fs.readFileSync(path.join(root,'content','upcoming.json'),'utf8')); } catch(e){ return null; } })(),
+};
+fs.writeFileSync(path.join(root, 'content-index.json'), JSON.stringify(index, null, 2));
+
+console.log('\n✅ All indexes rebuilt:');
+console.log(`   news: ${newsItems.length}, gallery: ${galleryItems.length}, cards: ${cardItems.length}`);
